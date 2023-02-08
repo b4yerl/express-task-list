@@ -7,6 +7,10 @@ dotenv.config({ path: './config/config.env' });
 
 const app = express();
 
+// Database connection
+const connectDB = require('./config/db');
+connectDB();
+
 // Using logger only while on development
 if(process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
