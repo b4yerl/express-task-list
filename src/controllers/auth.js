@@ -1,9 +1,12 @@
 const User = require('../models/User');
 
+const asyncHandler = require('../middleware/asyncHandler')
+const ErrorResponse = require('../utils/ErrorResponse');
+
 // @desc   Register a user
 // @routes POST /api/v1/auth/register
 // @access Public
-exports.register = async (req, res, next) => {
+exports.register = asyncHandler(async (req, res, next) => {
   // Isolate these fields prventing the user to changing something we don't want to
   const { username, email, password} = req.body;
   const userParams = {
@@ -17,7 +20,7 @@ exports.register = async (req, res, next) => {
 
   
   getTokenSendResponse(user, 201, res);
-};
+});
 
 // Set up cookie and send back token response
 const getTokenSendResponse = (user, statusCode, res) => {
