@@ -16,5 +16,25 @@ exports.register = async (req, res, next) => {
   const user = await User.create(userParams);
 
   
-  res.status(201).json({ success: true });
-}
+  getTokenSendResponse(user, 201, res);
+};
+
+// Set up cookie and send back token response
+const getTokenSendResponse = (user, statusCode, res) => {
+  
+  // Get JWT
+  const token = user.getJwt();
+
+  // Define cookie options
+  const daysInMilliseconds = process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000;
+
+  const options = {
+    expires: new Date().now + daysInMilliseconds,
+    httpOnly: true
+  };
+
+  if(process.env.NODE_ENV === 'production') options.secure = true; 
+
+  // Send back response including the cookie
+  res.status(statusCode).cookie('token', token, options).json({ success: true, token})
+} 

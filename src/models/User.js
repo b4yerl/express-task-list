@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcryptjs = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const UserSchema = mongoose.Schema({
   username: {
@@ -26,6 +27,7 @@ const UserSchema = mongoose.Schema({
     required: [true, 'Please add a password'],
     minlength: [6, 'Password must have at least 6 characters'],
     // match: a-z A-Z 0-9 !-?
+    select: false
   },
   resetPasswordToken: String,
   resetPasswordExpire: Date,
@@ -49,6 +51,13 @@ UserSchema.pre('save', async function(next) {
 // Match input password to the database one
 UserSchema.methods.matchPasswords = async function(input) {
   return await bcryptjs.compare(input, this.password);
+};
+
+// Get JWT and Return it
+UserSchema.methods.getJwt = function() {
+  return jwt.sign({ id: this._id}, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRE
+  });
 };
 
 module.exports = mongoose.model('User', UserSchema);
