@@ -63,6 +63,20 @@ exports.getMe = asyncHandler(async (req, res, next) => {
   res.status(200).json({ success: true, data: user });
 });
 
+// @desc   Update user details
+// @routes PATCH /api/v1/auth/update/details
+// @access Private
+exports.updateDetails = asyncHandler(async (req, res, next) => {
+  const { email, username } = req.body;
+  
+  const user = await User.findByIdAndUpdate(req.user.id, { email, username }, {
+    new: true,
+    runValidators: true
+  });
+
+  res.status(200).json({ success: true, data: user });
+});
+
 // Set up cookie and send back token response
 const getTokenSendResponse = (user, statusCode, res) => {
   
