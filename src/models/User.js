@@ -25,8 +25,11 @@ const UserSchema = mongoose.Schema({
   password: {
     type: String,
     required: [true, 'Please add a password'],
-    minlength: [6, 'Password must have at least 6 characters'],
-    // match: a-z A-Z 0-9 !-?
+    minlength: [8, 'Password must have at least 8 characters'],
+    match: [
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W|.*_).*$/,
+      'Password must have at least one lower case letter, one upper case letter, a number and a special character'
+    ],
     select: false
   },
   resetPasswordToken: String,
