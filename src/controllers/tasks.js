@@ -22,3 +22,19 @@ exports.getAllTasks = asyncHandler(async (req, res, next) => {
   // Sends back the results coming from the query middleware
   res.status(200).json(res.results);
 });
+
+// @desc   Get single task
+// @routes GET /api/v1/tasks/:id
+// @access Private
+exports.getSingleTask = asyncHandler(async (req, res, next) => {
+  const task = await Task.findById(req.params.id);
+
+  // Verify task existence
+  if(!task) return next(new ErrorResponse('Task not found', 404));
+
+  // Verify if user is the task author
+  if(task.user.toString() !== req.user.id)
+    return next(new ErrorResponse('Not authorized to access this route', 403));
+    
+  res.status(200).json({ success: true, data: task});
+});
