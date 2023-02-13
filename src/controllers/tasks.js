@@ -64,3 +64,33 @@ exports.changeStatus = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({ success: true, data: task });
 });
+
+// @desc   Update task details
+// @routes PATCH /api/v1/tasks/:id
+// @access Private
+exports.updateTask = asyncHandler(async (req, res, next) => {
+  const task = await Task.findById(req.params.id);
+
+  // Verify task existence
+  if(!task) return next(new ErrorResponse('Task not found', 404));
+
+  // Verify if user is the task author
+  if(task.user.toString() !== req.user.id)
+    return next(new ErrorResponse('Not authorized to access this route', 403));
+  
+  const { title, description, status } = req.body
+  const updatedTask = await Task.findByIdAndUpdate(
+    req.params.id, 
+    {
+      title,
+      description,
+      status
+    },
+    {
+      new: true,
+      runValidators: true
+    }
+  );
+
+  res.status(200).json({ success: true, data: updatedTask });
+});

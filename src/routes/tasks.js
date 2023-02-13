@@ -3,7 +3,8 @@ const {
   createTask,
   getAllTasks,
   getSingleTask,
-  changeStatus
+  changeStatus,
+  updateTask
 } = require('../controllers/tasks');
 const Task = require('../models/Task');
 
@@ -19,6 +20,7 @@ router.route('/')
 
 router.route('/:id')
   .get(protect, getSingleTask)
+  .patch(protect, updateTask)
 
 router.patch('/:id/status', protect, changeStatus);
 
