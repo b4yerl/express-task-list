@@ -3,7 +3,7 @@ const asyncHandler = require('./asyncHandler');
 const ErrorResponse = require('../utils/ErrorResponse');
 const User = require('../models/User');
 
-exports.protect = asyncHandler(async (req, res, next) => {
+const protect = asyncHandler(async (req, res, next) => {
   let token;
 
   // Get token from req headers or from the stored cookie
@@ -30,3 +30,5 @@ exports.protect = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse('Not authenticated', 401));
   }
 });
+
+module.exports = protect;
