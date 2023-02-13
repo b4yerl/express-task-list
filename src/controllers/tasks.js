@@ -14,3 +14,13 @@ exports.createTask = asyncHandler(async (req, res, next) => {
 
   res.status(201).json({ success: true, data: task });
 });
+
+// @desc   Get all tasks
+// @routes GET /api/v1/tasks
+// @access Private
+exports.getAllTasks = asyncHandler(async (req, res, next) => {
+  // Find tasks related to logged in user
+  const tasks = await Task.find({ user: req.user.id });
+
+  res.status(200).json({ success: true, data: tasks });
+});
