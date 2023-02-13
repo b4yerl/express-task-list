@@ -3,14 +3,16 @@ const {
   createTask,
   getAllTasks
 } = require('../controllers/tasks');
+const Task = require('../models/Task');
 
-// Import authentication middleware
+// Import authentication and query middleware
 const protect  = require('../middleware/protect');
+const advancedResults = require('../middleware/query');
 
 const router = express.Router();
 
 router.route('/')
   .post(protect, createTask)
-  .get(protect, getAllTasks)
+  .get(protect, advancedResults(Task), getAllTasks)
 
 module.exports = router;
