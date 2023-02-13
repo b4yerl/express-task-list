@@ -40,6 +40,20 @@ exports.login = asyncHandler(async (req, res, next) => {
   getTokenSendResponse(user, 200, res);
 });
 
+// @desc   Logout current User
+// @routes GET /api/v1/auth/logout
+// @access Public
+exports.logout = asyncHandler(async (req, res, next) => {
+  const tenSeconds = 10 * 1000
+
+  res.cookie('token', 'none', {
+    expires: new Date(Date.now() + tenSeconds),
+    httpOnly: true
+  });
+
+  res.status(200).json({ success: true });
+});
+
 // Set up cookie and send back token response
 const getTokenSendResponse = (user, statusCode, res) => {
   
@@ -50,7 +64,7 @@ const getTokenSendResponse = (user, statusCode, res) => {
   const daysInMilliseconds = process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000;
 
   const options = {
-    expires: new Date().now + daysInMilliseconds,
+    expires: new Date(Date.now() + daysInMilliseconds),
     httpOnly: true
   };
 
