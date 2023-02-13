@@ -2,7 +2,8 @@ const express = require('express');
 const {
   createTask,
   getAllTasks,
-  getSingleTask
+  getSingleTask,
+  changeStatus
 } = require('../controllers/tasks');
 const Task = require('../models/Task');
 
@@ -18,5 +19,7 @@ router.route('/')
 
 router.route('/:id')
   .get(protect, getSingleTask)
+
+router.patch('/:id/status', protect, changeStatus);
 
 module.exports = router;

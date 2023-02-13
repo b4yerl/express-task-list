@@ -38,3 +38,29 @@ exports.getSingleTask = asyncHandler(async (req, res, next) => {
     
   res.status(200).json({ success: true, data: task});
 });
+
+// @desc   Change task status
+// @routes PATCH /api/v1/tasks/:id/status
+// @access Private
+exports.changeStatus = asyncHandler(async (req, res, next) => {
+  const task = await Task.findById(req.params.id);
+
+  // Verify task existence
+  if(!task) return next(new ErrorResponse('Task not found', 404));
+
+  // Verify if user is the task author
+  if(task.user.toString() !== req.user.id)
+    return next(new ErrorResponse('Not authorized to access this route', 403));
+  
+  // Change status then save it
+  if(task.status === 'pending') {
+    task.status = 'complete' 
+  }
+  else {
+    task.status = 'pending'
+  }
+
+  await task.save();
+
+  res.status(200).json({ success: true, data: task });
+});
