@@ -67,6 +67,7 @@ exports.getMe = asyncHandler(async (req, res, next) => {
 // @routes PATCH /api/v1/auth/update/details
 // @access Private
 exports.updateDetails = asyncHandler(async (req, res, next) => {
+  // Isolates only allowed fields to update
   const { email, username } = req.body;
   
   const user = await User.findByIdAndUpdate(req.user.id, { email, username }, {
@@ -75,6 +76,26 @@ exports.updateDetails = asyncHandler(async (req, res, next) => {
   });
 
   res.status(200).json({ success: true, data: user });
+});
+
+// @desc   Update user password
+// @routes PATCH /api/v1/auth/update/password
+// @access Private
+exports.updatePassword = asyncHandler(async (req, res, next) => {
+  const { currentPassword, newPassword } = req.body;
+
+  const user = await User.findById(req.user.id)
+    .select('+password');
+
+  // Verify current user password as a safety measure
+  if(!(await user.matchPasswords(currentPassword))) {
+    return next(new ErrorResponse('Incorrect password', 403));
+  }
+
+  user.password = newPassword;
+  await user.save();
+
+  getTokenSendResponse(user, 200, res);
 });
 
 // Set up cookie and send back token response
