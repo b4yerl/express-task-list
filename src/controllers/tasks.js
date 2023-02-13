@@ -94,3 +94,30 @@ exports.updateTask = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({ success: true, data: updatedTask });
 });
+
+// @desc   Delete single task
+// @routes DELETE /api/v1/tasks/:id
+// @access Private
+exports.deleteTask = asyncHandler(async (req, res, next) => {
+  const task = await Task.findById(req.params.id);
+
+  // Verify task existence
+  if(!task) return next(new ErrorResponse('Task not found', 404));
+
+  // Verify if user is the task author
+  if(task.user.toString() !== req.user.id)
+    return next(new ErrorResponse('Not authorized to access this route', 403));
+  
+  await Task.findByIdAndDelete(req.params.id);
+    
+  res.status(200).json({ success: true, data: {} });
+});
+
+// @desc   Delete completed tasks
+// @routes DELETE /api/v1/tasks/
+// @access Private
+exports.deleteCompletedTasks = asyncHandler(async (req, res, next) => {
+  const task = await Task.deleteMany({ user: req.user.id, status: 'complete' });
+
+  res.status(200).json({ success: true, data: {} });
+});

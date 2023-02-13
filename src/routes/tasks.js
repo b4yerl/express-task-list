@@ -4,7 +4,9 @@ const {
   getAllTasks,
   getSingleTask,
   changeStatus,
-  updateTask
+  updateTask,
+  deleteTask,
+  deleteCompletedTasks
 } = require('../controllers/tasks');
 const Task = require('../models/Task');
 
@@ -17,10 +19,12 @@ const router = express.Router();
 router.route('/')
   .post(protect, createTask)
   .get(protect, advancedResults(Task), getAllTasks)
+  .delete(protect, deleteCompletedTasks)
 
 router.route('/:id')
   .get(protect, getSingleTask)
   .patch(protect, updateTask)
+  .delete(protect, deleteTask)
 
 router.patch('/:id/status', protect, changeStatus);
 
