@@ -23,9 +23,11 @@ if (process.env.NODE_ENV === 'development') {
 
 // Import route files
 const auth = require('./routes/auth');
+const tasks = require('./routes/tasks');
 
 // Define routes
 app.use('/api/v1/auth', auth);
+app.use('/api/v1/tasks', tasks);
 
 // Error handling middleware setup
 const errorHandler = require('./middleware/error');
