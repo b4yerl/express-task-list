@@ -22,6 +22,24 @@ exports.register = asyncHandler(async (req, res, next) => {
   getTokenSendResponse(user, 201, res);
 });
 
+// @desc   Login user
+// @routes POST /api/v1/auth/login
+// @access Public
+exports.login = asyncHandler(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  const user = await User.findOne({ email: email })
+    .select('+password');
+
+  if(!user) return next(new ErrorResponse('Invalid Credentials', 401));
+
+  const isMatch = await user.matchPasswords(password);
+
+  if(!isMatch) return next(new ErrorResponse('Invalid Credentials', 401));
+  
+  getTokenSendResponse(user, 200, res);
+});
+
 // Set up cookie and send back token response
 const getTokenSendResponse = (user, statusCode, res) => {
   
