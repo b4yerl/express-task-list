@@ -16,16 +16,20 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
+// Using logger only while on development
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
+
 // Import route files
 const auth = require('./routes/auth');
 
 // Define routes
 app.use('/api/v1/auth', auth);
 
-// Using logger only while on development
-if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
-}
+// Error handling middleware setup
+const errorHandler = require('./middleware/error');
+app.use(errorHandler);
 
 const port = process.env.PORT || 5000;
 const server = app.listen(port, () =>
