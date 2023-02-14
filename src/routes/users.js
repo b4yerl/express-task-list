@@ -1,7 +1,8 @@
 const express = require('express');
 const {
   getAllUsers,
-  getSingleUser
+  getSingleUser,
+  updateUser
 } = require('../controllers/users');
 
 const router = express.Router();
@@ -15,6 +16,7 @@ router.route('/')
   .get(protect, checkAdmin, getAllUsers)
 
 router.route('/:id')
-  .get(protect, getSingleUser)
+  .get(protect, checkAdmin, getSingleUser)
+  .patch(protect, checkAdmin, updateUser)
 
 module.exports = router;

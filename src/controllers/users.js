@@ -27,3 +27,18 @@ exports.getSingleUser = asyncHandler(async (req, res, next) => {
   
   res.status(200).json({ success: true, data: user });
 });
+
+// @desc   Update user details
+// @routes PATCH /api/v1/users/:id
+// @access Private (admin)
+exports.updateUser = asyncHandler(async (req, res, next) => {
+  const { email, username } = req.body;
+  const user = await User.findByIdAndUpdate(req.params.id, { email, username}, {
+    new: true,
+    runValidators: true
+  });
+
+  if(!user) return next(new ErrorResponse('User not found', 404));
+  
+  res.status(200).json({ success: true, data: user });
+});
