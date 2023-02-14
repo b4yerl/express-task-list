@@ -5,7 +5,8 @@ const {
   logout,
   getMe,
   updateDetails,
-  updatePassword
+  updatePassword,
+  forgotPassword
 } = require('../controllers/auth');
 
 // Import authentication middleware
@@ -15,6 +16,7 @@ const router = express.Router();
 
 router.post('/register', register);
 router.post('/login', login);
+router.post('/forgot-password', forgotPassword);
 router.get('/logout', logout);
 router.get('/me', protect, getMe);
 router.patch('/update/details', protect, updateDetails);

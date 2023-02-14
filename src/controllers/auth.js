@@ -2,6 +2,7 @@ const User = require('../models/User');
 
 const asyncHandler = require('../middleware/asyncHandler')
 const ErrorResponse = require('../utils/ErrorResponse');
+const sendEmail = require('../utils/sendEmail');
 
 // @desc   Register a user
 // @routes POST /api/v1/auth/register
@@ -96,6 +97,42 @@ exports.updatePassword = asyncHandler(async (req, res, next) => {
   await user.save();
 
   getTokenSendResponse(user, 200, res);
+});
+
+// @desc   Send email to reset password
+// @routes POST /api/v1/auth/forgot-password
+// @access Public
+exports.forgotPassword = asyncHandler(async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email });
+
+  if(!user) return next(new ErrorResponse('User not found', 404));
+
+  // Get token and send both hash and expire limit to current user
+  const token = user.getResetPasswordToken();
+  await user.save({ validateBeforeSave: false });
+
+  // Create reset url and message
+  const resetUrl = `${req.protocol}://${req.get('host')}/api/v1/auth/reset/${token}`;
+  const text = `To reset your password please visit: \n ${resetUrl}`;
+
+  try {
+    await sendEmail({
+      email: req.body.email,
+      subject: 'Password reset',
+      text
+    });
+
+    res.status(200).json({ success: true, data: `Email sent to ${req.body.email}`});
+  } catch(err) {
+    console.log(err.message);
+
+    // Reset user document fields and save
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    await user.save({ validateBeforeSave: false });
+
+    return next(new ErrorResponse('Failed to send email', 500));
+  }
 });
 
 // Set up cookie and send back token response

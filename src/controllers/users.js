@@ -2,7 +2,7 @@ const User = require('../models/User');
 
 const ErrorResponse = require('../utils/ErrorResponse');
 const asyncHandler = require('../middleware/asyncHandler');
-const pagination = require('../middleware/pagination');
+const pagination = require('../utils/pagination');
 
 // @desc   Get all users
 // @routes GET /api/v1/users

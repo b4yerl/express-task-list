@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcryptjs = require('bcryptjs');
+const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 
 const UserSchema = mongoose.Schema({
@@ -62,5 +63,19 @@ UserSchema.methods.getJwt = function() {
     expiresIn: process.env.JWT_EXPIRE
   });
 };
+
+// Generate reset password token
+UserSchema.methods.getResetPasswordToken = function() {
+  // Create the reset password token
+  const token = crypto.randomBytes(20).toString('hex');
+  const tenMinutes = 10 * 60 * 1000;
+
+  // Hash the token to store it and define a 10 minutes expire limit
+  this.resetPasswordToken = crypto.createHash('sha256').update(token).digest('hex');
+  this.resetPasswordExpire = new Date(Date.now() + tenMinutes);
+
+  // Return original token to be sent within the email
+  return token;
+}
 
 module.exports = mongoose.model('User', UserSchema);
