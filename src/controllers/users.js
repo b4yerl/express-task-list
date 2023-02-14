@@ -4,6 +4,9 @@ const ErrorResponse = require('../utils/ErrorResponse');
 const asyncHandler = require('../middleware/asyncHandler');
 const pagination = require('../middleware/pagination');
 
+// @desc   Get all users
+// @routes GET /api/v1/users
+// @access Private (admin)
 exports.getAllUsers = asyncHandler(async (req, res, next) => {
   const users = await User.find();
 
@@ -12,4 +15,15 @@ exports.getAllUsers = asyncHandler(async (req, res, next) => {
   const data = pagination(req, users);
   
   res.status(200).json(data);
+});
+
+// @desc   Get single user
+// @routes GET /api/v1/users/:id
+// @access Private (admin)
+exports.getSingleUser = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.params.id);
+
+  if(!user) return next(new ErrorResponse('User not found', 404));
+  
+  res.status(200).json({ success: true, data: user });
 });

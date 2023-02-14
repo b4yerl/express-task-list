@@ -1,6 +1,7 @@
 const express = require('express');
 const {
-  getAllUsers
+  getAllUsers,
+  getSingleUser
 } = require('../controllers/users');
 
 const router = express.Router();
@@ -12,5 +13,8 @@ const advancedResults = require('../middleware/query');
 
 router.route('/')
   .get(protect, checkAdmin, getAllUsers)
+
+router.route('/:id')
+  .get(protect, getSingleUser)
 
 module.exports = router;
