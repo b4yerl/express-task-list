@@ -52,6 +52,12 @@ UserSchema.pre('save', async function(next) {
   next();
 });
 
+// Cascade delete
+UserSchema.pre('remove', async function(next) {
+  await this.model('Task').deleteMany({ user: this._id });
+  next();
+});
+
 // Match input password to the database one
 UserSchema.methods.matchPasswords = async function(input) {
   return await bcryptjs.compare(input, this.password);

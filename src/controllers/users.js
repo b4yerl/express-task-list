@@ -53,7 +53,7 @@ exports.deleteUser = asyncHandler(async (req, res, next) => {
   // Verify user existence
   if(!user) return next(new ErrorResponse('User not found', 404));
 
-  await User.findByIdAndDelete(req.params.id);
+  await user.remove();
   
-  res.status(200).json({ success: true, data: user });
+  res.status(200).json({ success: true, data: {} });
 });
