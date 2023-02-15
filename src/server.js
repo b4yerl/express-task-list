@@ -4,6 +4,14 @@ const colors = require('colors');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 
+// Import safety packages
+const mongoSanitize = require('express-mongo-sanitize');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const xss = require('xss-clean');
+const cors = require('cors');
+const hpp = require('hpp')
+
 dotenv.config({ path: './config/config.env' });
 
 // Database connection
@@ -20,6 +28,30 @@ app.use(cookieParser());
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
+
+// Sanitize input data
+app.use(mongoSanitize());
+
+// Security headers
+app.use(helmet());
+
+// Prevent XSS attacks
+app.use(xss());
+
+// Setting rate limiting in 200 requests per 10 minutes
+const tenMinutes = 10 * 60 * 1000
+const limiter = rateLimit({
+  windowMs: tenMinutes,
+  max: 200
+});
+
+app.use(limiter);
+
+// Prevent Http Parameters Pollution
+app.use(hpp());
+
+// Enable CORS
+app.use(cors());
 
 // Import route files
 const auth = require('./routes/auth');
